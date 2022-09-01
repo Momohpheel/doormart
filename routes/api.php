@@ -7,6 +7,8 @@ use App\Http\Controllers\VendorAuthController;
 use App\Http\Controllers\Vendor\ProductController;
 use App\Http\Controllers\Vendor\ProfileController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
+use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\ProductController as UserProductController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -31,9 +33,25 @@ Route::prefix('user')->group(function () {
     Route::middleware(['auth:user'])->group(function () {
 
         Route::prefix('profile')->group(function () {
-            Route::post('/update', [UserProfileController::class, 'updateProfile']);
+            Route::post('/update', [UserProfileController::class, 'getVendors']);
             Route::get('/', [UserProfileController::class, 'getProfile']);
         });
+
+        Route::prefix('vendor')->group(function () {
+            Route::post('/all', [UserController::class, 'getVendors']);
+            Route::post('/products', [UserController::class, 'getVendorProducts']);
+
+        });
+
+        Route::prefix('cart')->group(function () {
+            Route::post('/add', [UserProductController::class, 'addToCart']);
+            Route::get('/', [UserProductController::class, 'getCart']);
+
+        });
+
+
+
+
 
 
     });

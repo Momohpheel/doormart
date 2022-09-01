@@ -2,6 +2,8 @@
 namespace App\Repository\User;
 
 use App\Models\User;
+use App\Models\Vendor;
+use App\Models\Product;
 use App\Repository\Interface\User\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
@@ -33,14 +35,26 @@ class UserRepository implements UserRepositoryInterface
         return $user;
     }
 
-    public function getVendors()
+    public function getVendors(array $request)
     {
-//based on region and category
+        if (isset($request['region_id'])){
+            $vendor = Vendor::with('categories')->where('region_id', $request['region_id'])->where('category_id',  $request['category_id'])->where('status', 'active')->get();
+        }else{
+            $vendor = Vendor::with('categories')->where('category_id',  $request['category_id'])->get();
+        }
+
+
+        return $vendor;
+
+
     }
 
-    public function getVendorProducts()
+    public function getVendorProducts(array $request)
     {
 
+        $products = Product::with('productCategory')->where('vendor_id', $request['vendor_id'])->get();
+
+        return $products;
     }
 
     public function likeVendorProducts()
