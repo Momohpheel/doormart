@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Trait\Response;
 use App\Model\Cart;
 use App\Repository\Interface\User\ProductRepositoryInterface;
+use App\Exceptions\ErrorException;
 
 class ProductController extends Controller
 {
@@ -31,22 +32,48 @@ class ProductController extends Controller
 
     }
 
-    public function getCart()
+    public function getCart($category_id)
     {
-        $response = $this->service->getCart();
+        if (!is_numeric($category_id)) throw new ErrorException("Invald category ID: ");
 
-        return $this->success("User Cart", $response, 200);
+        try{
+
+            $response = $this->service->getCart($category_id);
+
+            return $this->success("User Cart", $response, 200);
+
+        }catch(\Exception $ex){
+
+
+
+            throw new ErrorException($ex);
+            // return $this->error($e->getMessage());
+        }
+
+
 
     }
 
-    public function removeSingleProduct()
+    public function removeSingleProduct(int $id)
     {
+        if (!is_numeric($id)) throw new ErrorException("Invald ID");
+
+
+            $response = $this->service->removeSingleProduct($id);
+
+            return $this->success("Removed Product from Cart", $response, 200);
+
 
     }
 
 
-    public function removeAll()
+    public function removeAll(int $category_id)
     {
+        if (!is_numeric($category_id)) throw new ErrorException("Invald category ID");
+
+        $response = $this->service->removeAll($category_id);
+
+        return $this->success("Removed Products from Cart", $response, 200);
 
     }
 
@@ -55,11 +82,28 @@ class ProductController extends Controller
     {
 
     }
-    //add to cart, bag (category_id, vendor_id, user_id, product_id)
 
-    //get bag - (category_id, user_id)
+    public function incrementQuantity(int $id)
+    {
+        if (!is_numeric($id)) throw new ErrorException("Invald ID: ");
 
-    //remove from bag
+        $response = $this->service->incrementQuantity($id);
+
+        return $this->success("Increased quantity Products from Cart", $response, 200);
+
+    }
+
+    public function decrementQuantity(int $id)
+    {
+
+        if (!is_numeric($id)) throw new ErrorException("Invald ID: ");
+
+        $response = $this->service->decrementQuantity($id);
+
+        return $this->success("Reduced quantity Products from Cart", $response, 200);
+
+    }
+
 
     //buy - move to order, payment method (paystack/wallet)
 

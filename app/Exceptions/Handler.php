@@ -4,9 +4,13 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use App\Exceptions\ErrorException;
+use App\Trait\Response;
 
 class Handler extends ExceptionHandler
 {
+
+    use Response;
     /**
      * A list of exception types with their corresponding custom log levels.
      *
@@ -45,6 +49,16 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (ErrorException $ex, $request) {
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    "status" => false,
+                    "error" => $ex->getMessage()
+                ]);
+            }
         });
     }
 }

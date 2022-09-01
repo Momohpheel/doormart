@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 interface ProductRepositoryInterface{
 
     public function addToCart(array $request);
-    public function getCart();
-    public function removeSingleProduct();
-    public function removeAll();
+    public function getCart(int $category_id);
+    public function removeSingleProduct(int $id);
+    public function removeAll(int $category_id);
     public function orderProduct();
+    public function incrementQuantity(int $id);
+    public function decrementQuantity(int $id);
 
 }
 

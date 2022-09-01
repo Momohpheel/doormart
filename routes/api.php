@@ -45,7 +45,11 @@ Route::prefix('user')->group(function () {
 
         Route::prefix('cart')->group(function () {
             Route::post('/add', [UserProductController::class, 'addToCart']);
-            Route::get('/', [UserProductController::class, 'getCart']);
+            Route::get('/{category_id}', [UserProductController::class, 'getCart']);
+            Route::delete('/{cart_id}', [UserProductController::class, 'removeSingleProduct']);
+            Route::delete('/all/{category_id}', [UserProductController::class, 'removeAll']);
+            Route::post('/increment/{cart_id}', [UserProductController::class, 'incrementQuantity']);
+            Route::post('/decrement/{cart_id}', [UserProductController::class, 'decrementQuantity']);
 
         });
 
