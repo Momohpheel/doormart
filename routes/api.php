@@ -50,6 +50,7 @@ Route::prefix('user')->group(function () {
             Route::delete('/all/{category_id}', [UserProductController::class, 'removeAll']);
             Route::post('/increment/{cart_id}', [UserProductController::class, 'incrementQuantity']);
             Route::post('/decrement/{cart_id}', [UserProductController::class, 'decrementQuantity']);
+            Route::post('/delivery/fee', [UserProductController::class, 'setDeliveryFee']);
 
         });
 

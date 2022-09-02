@@ -21,6 +21,10 @@ class ProductController extends Controller
         $this->service = $service;
     }
 
+
+
+
+
     public function addToCart(CartRequest $request)
     {
 
@@ -31,6 +35,11 @@ class ProductController extends Controller
         return $this->success("Product added to Cart", $response, 200);
 
     }
+
+
+
+
+
 
     public function getCart($category_id)
     {
@@ -43,16 +52,13 @@ class ProductController extends Controller
             return $this->success("User Cart", $response, 200);
 
         }catch(\Exception $ex){
-
-
-
             throw new ErrorException($ex);
-            // return $this->error($e->getMessage());
         }
-
-
-
     }
+
+
+
+
 
     public function removeSingleProduct(int $id)
     {
@@ -62,9 +68,10 @@ class ProductController extends Controller
             $response = $this->service->removeSingleProduct($id);
 
             return $this->success("Removed Product from Cart", $response, 200);
-
-
     }
+
+
+
 
 
     public function removeAll(int $category_id)
@@ -78,10 +85,47 @@ class ProductController extends Controller
     }
 
 
-    public function orderProduct()
+
+    //use vendor address and user delivery address to calculate delivery fee
+    //price will be calculated by the amount of kilometers (fixed amount for the closest and
+    //farthest based on the kilometer difference between the vendor address and user address)
+
+    //example : 300 is the fixed delivery price, but when the km difference exceeds a certain amount, it is increased to 800,
+
+    public function setDeliveryFee(Request $request)
     {
+        $validated = $request->validate([
+            "logitude" => "required|string",
+            "latitude" => "required|string",
+            "vendor_id" => "required|exists:vendors,id",
+            "cart_id" => "required|exists:carts,id"
+        ]);
+
+        $response = $this->service->setDeliveryFee($validated);
+
+        return $this->success("Delivery fee set", $response, 200);
 
     }
+
+
+
+
+
+    public function orderProduct()
+    {
+        //buy - cart id, userid, status, delivery address, delivery/pickup
+	    //amount, payment_from, delivery amount, rider_id,
+	    //delivery instruction
+
+
+
+        //verifies payment - check if wallet/card
+        //connects to rider
+        //add data to order
+    }
+
+
+
 
     public function incrementQuantity(int $id)
     {
@@ -92,6 +136,10 @@ class ProductController extends Controller
         return $this->success("Increased quantity Products from Cart", $response, 200);
 
     }
+
+
+
+
 
     public function decrementQuantity(int $id)
     {

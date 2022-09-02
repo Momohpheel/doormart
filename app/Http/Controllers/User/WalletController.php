@@ -8,6 +8,26 @@ use App\Http\Requests\VendorLogin;
 
 class WalletController extends Controller
 {
+
+    public function __construct()
+    {
+
+    }
+
+    public function addMoney()
+    {
+
+    }
+
+    public function verifyTransaction()
+    {
+
+    }
+
+    public function getWalletHistory()
+    {
+
+    }
     //add money
     //wallet history
 }
