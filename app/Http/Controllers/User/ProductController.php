@@ -108,14 +108,18 @@ class ProductController extends Controller
     }
 
 
+    public function payForOrder()
+    {
 
+    }
 
 
     public function orderProduct()
     {
-        //buy - cart id, userid, status, delivery address, delivery/pickup
-	    //amount, payment_from, delivery amount, rider_id,
-	    //delivery instruction
+        //buy - cart id, userid, status, delivery address, logitude, latitude, (rider longitude, latitude),, delivery time,  delivery/pickup
+	    //amount, payment_from, delivery amount, rider_id, order_Accepted, dispatcher_confirmed, dispatcher_to_vendor, order_received,
+        //order_arrived, order_received
+	    //delivery instruction, delivery time,
 
 
 

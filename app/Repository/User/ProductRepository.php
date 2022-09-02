@@ -43,17 +43,20 @@ class ProductRepository implements ProductRepositoryInterface
     {
         $items = array();
         $price = 0;
+        $deliveryfee = 0;
         $cart = Cart::with(['user','product', 'vendor'])->where('user_id', auth()->user()->id)->where('category_id', $id)->get();
 
         array_push($items, $cart);
 
         foreach ($cart as $item){
             $price += $item->price;
+            $deliveryfee = $item->delivery_fee;
         }
 
         $pricecalculate = [
             "total_price" => $price,
-            "delivery_fee" => null,
+            "delivery_fee" => $deliveryfee,
+            "total" => $price + $deliveryfee
         ];
 
         array_push($items, $pricecalculate);

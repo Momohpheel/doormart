@@ -13,9 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('carts', function (Blueprint $table) {
-            $table->integer('delivery_fee')->default(0);
-            $table->enum('status', ['paid', 'not paid']);
+        Schema::create('user_wallet_histories', function (Blueprint $table) {
+            $table->id();
+            $table->string('type');
+            $table->integer('amount');
+            $table->string('description');
+            $table->foreignId('user_id')->constrained();
+            $table->timestamps();
         });
     }
 
@@ -26,8 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('carts', function (Blueprint $table) {
-            Schema::dropIfExists('carts');
-        });
+        Schema::dropIfExists('user_wallet_histories');
     }
 };
