@@ -14,6 +14,10 @@ use App\Repository\Interface\User\UserRepositoryInterface;
 use App\Repository\Interface\User\ProductRepositoryInterface as UserProductRepositoryInterface;
 use App\Repository\User\UserRepository;
 use App\Repository\User\ProductRepository as UserProductRepository;
+use App\Repository\Rider\OrderRepository;
+use App\Repository\Interface\Rider\OrderRepositoryInterface;
+use App\Repository\Rider\AuthRepository as RiderAuthRepository;
+use App\Repository\Interface\Rider\AuthRepositoryInterface as RiderAuthRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -31,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(VendorRepositoryInterface::class, VendorRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(UserProductRepositoryInterface::class, UserProductRepository::class);
+        $this->app->bind(RiderAuthRepositoryInterface::class, RiderAuthRepository::class);
+        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
     }
 
     /**
