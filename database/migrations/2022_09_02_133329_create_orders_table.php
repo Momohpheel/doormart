@@ -32,6 +32,7 @@ return new class extends Migration
             $table->boolean('order_arrived')->default(false);
             $table->boolean('user_received_order')->default(false);
             $table->enum('status', ['paid', 'not paid']);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

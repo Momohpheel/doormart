@@ -18,8 +18,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('phone');
+            $table->boolean('is_available')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->string('phone')->unique();
             $table->foreignId('agency_id')->nullable()->constrained('agencies');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

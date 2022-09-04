@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('amount');
             $table->string('description');
             $table->foreignId('user_id')->constrained();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

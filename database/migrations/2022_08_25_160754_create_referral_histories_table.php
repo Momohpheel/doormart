@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('referrer')->constrained('users');
             $table->foreignId('referred')->constrained('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

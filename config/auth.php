@@ -48,6 +48,14 @@ return [
             'driver' => 'sanctum',
             'provider' => 'vendors',
         ],
+        'rider' => [
+            'driver' => 'sanctum',
+            'provider' => 'riders',
+        ],
+        'agency' => [
+            'driver' => 'sanctum',
+            'provider' => 'agencies',
+        ],
     ],
 
     /*
@@ -75,6 +83,14 @@ return [
         'vendors' => [
             'driver' => 'eloquent',
             'model' => App\Models\Vendor::class,
+        ],
+        'riders' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Rider::class,
+        ],
+        'agencies' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Agency::class,
         ],
 
         // 'users' => [
