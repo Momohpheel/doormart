@@ -8,7 +8,7 @@ class WalletRepository {
     {
         $wallet = UserWallet::where('user_id', $id)->first();
         if (!$wallet) {
-            $wallet = new Wallet;
+            $wallet = new UserWallet;
             $wallet->amount = 0;
             $wallet->user_id = $id;
             $wallet->save();

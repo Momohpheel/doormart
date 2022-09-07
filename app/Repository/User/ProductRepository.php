@@ -8,7 +8,7 @@ use App\Models\Cart;
 use App\Repository\Interface\User\ProductRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
-
+use App\Models\UserWallet;
 
 class ProductRepository implements ProductRepositoryInterface
 {
@@ -34,6 +34,7 @@ class ProductRepository implements ProductRepositoryInterface
         $cart->user_id = auth()->user()->id;
         $cart->quantity = $request['quantity'];
         $cart->price = (int)$product->price * (int)$request['quantity'];
+        $cart->status = 'not paid';
         $cart->save();
 
         return $cart;
@@ -167,9 +168,102 @@ class ProductRepository implements ProductRepositoryInterface
         return $distance/1000; //km
     }
 
-    public function orderProduct()
+
+    public function payForOrder(array $request)
     {
+        $amount = 0;
+        $vId = 0;
+        $deliveryfee = 0;
+        foreach ($request['cart'] as $cart){
+            $order = Cart::where('id', $cart['id'])->first();
+
+            $amount += $order->price;
+            $vId = $order->vendor_id;
+
+        }
+
+        $vendor = Vendor::where('id', $vId)->first();
+
+        $distance = $this->twopoints_on_earth($vendor->latitude, $vendor->logitude, $request['delivery_latitude'], $request['delivery_longitude']);
+
+
+
+        if ($distance > 1 && $distance < 5) {
+            $deliveryfee = 300;
+        }else if ($distance > 5 && $distance < 10) {
+            $deliveryfee = 800;
+        }else if ($distance > 10) {
+            $deliveryfee = 1000;
+        }
+
+        $payment_details = [
+            "amount" => $amount + $deliveryfee,
+            "email" => auth()->user()->email,
+            "tx_ref" => "duka_".rand(),
+            "public_key" => config('app.public_key')
+        ];
+        //amount, tx_ref, public key
+        return  $payment_details;
+    }
+
+
+    public function verifyPayment(array $request)
+    {
+        //tx_ref
+
+
+    }
+
+    public function payForOrderWallet(array $request)
+    {
+        $wallet = UserWallet::where('user_id', auth()->user()->id)->first();
+        $amount = 0;
+        $vId = 0;
+        $deliveryfee = 0;
+        foreach ($request['cart'] as $cart){
+            $order = Cart::where('id', $cart['id'])->first();
+
+            $amount += $order->price;
+            $vId = $order->vendor_id;
+
+        }
+
+        $vendor = Vendor::where('id', $vId)->first();
+
+        $distance = $this->twopoints_on_earth($vendor->latitude, $vendor->logitude, $request['delivery_latitude'], $request['delivery_longitude']);
+
+
+
+        if ($distance > 1 && $distance < 5) {
+            $deliveryfee = 300;
+        }else if ($distance > 5 && $distance < 10) {
+            $deliveryfee = 800;
+        }else if ($distance > 10) {
+            $deliveryfee = 1000;
+        }
+
+        $total = $amount + $deliveryfee;
+
+        if ((int)$wallet->amount > (int)$total) {
+            $wallet->amount = $wallet->amount - $total;
+            $wallet->save();
+
+
+            $details = [
+                "amount" => $total,
+                "wallet_amount" => $wallet->amount
+            ];
+
+            //update order db
+
+            return $details;
+        }
+        else{
+            throw new \Exception("Amount in wallet is insuffecient to complete order");
+        }
 
     }
 }
+
+
 

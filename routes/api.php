@@ -52,6 +52,8 @@ Route::prefix('user')->group(function () {
             Route::post('/decrement/{cart_id}', [UserProductController::class, 'decrementQuantity']);
             Route::post('/delivery/fee', [UserProductController::class, 'setDeliveryFee']);
 
+            Route::post('/order/pay', [UserProductController::class, 'payForOrder']);
+
         });
 
 

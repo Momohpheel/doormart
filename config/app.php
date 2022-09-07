@@ -28,6 +28,9 @@ return [
     |
     */
 
+    'public_key' => 'pk_test_809edc34a46dca09135f30eb560908bc15c708dc',
+
+
     'env' => env('APP_ENV', 'production'),
 
     /*

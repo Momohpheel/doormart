@@ -6,7 +6,7 @@ use App\Http\Requests\CartRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Trait\Response;
-use App\Model\Cart;
+use App\Models\Cart;
 use App\Repository\Interface\User\ProductRepositoryInterface;
 use App\Exceptions\ErrorException;
 
@@ -94,25 +94,63 @@ class ProductController extends Controller
 
     public function setDeliveryFee(Request $request)
     {
-        $validated = $request->validate([
-            "logitude" => "required|string",
-            "latitude" => "required|string",
-            "vendor_id" => "required|exists:vendors,id",
-            "cart_id" => "required|exists:carts,id"
-        ]);
 
-        $response = $this->service->setDeliveryFee($validated);
 
-        return $this->success("Delivery fee set", $response, 200);
+
+            $validated = $request->validate([
+                "logitude" => "required|string",
+                "latitude" => "required|string",
+                "vendor_id" => "required|exists:vendors,id",
+                "cart_id" => "required|exists:carts,id"
+            ]);
+
+            $response = $this->service->setDeliveryFee($validated);
+
+            return $this->success("Delivery fee set", $response, 200);
 
     }
 
 
-    public function payForOrder()
+        public function payForOrder(Request $request)
+        {
+            try{
+            $validated = $request->validate([
+                'cart.*.id' => ['required', 'numeric', 'exists:carts,id'],
+                'delivery_address' => ['required', 'string'],
+                'delivery_longitude' => ['required', 'string'],
+                'delivery_latitude' => ['required', 'string'],
+                'delivery_type' => ['required', 'in:delivery,pickup'],
+                'payment_from' => ['required', 'in:wallet,card'],
+                'delivery_instruction' => ['string', 'nullable'],
+            ]);
+
+            if ($request['payment_from'] == 'wallet'){
+
+                $response = $this->service->payForOrderWallet($validated);
+
+                return $this->success("Payment made", $response, 200);
+
+            }else {
+
+                $response = $this->service->payForOrder($validated);
+
+                return $this->success("Payment details", $response, 200);
+
+            }
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+
+
+    }
+
+    public function verifyPayment()
     {
+        //verify payment
+        //chnge cart status to paid
+        //add cart to order
 
     }
-
 
     public function orderProduct()
     {
