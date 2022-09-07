@@ -144,12 +144,26 @@ class ProductController extends Controller
 
     }
 
-    public function verifyPayment()
+    public function verifyPayment(array $request)
     {
-        //verify payment
-        //chnge cart status to paid
-        //add cart to order
+        try{
+            $validated = $request->validate([
+                'txref' => ['required', 'string'],
+                'cart.*.id' => ['required', 'numeric', 'exists:carts,id'],
+                'delivery_address' => ['required', 'string'],
+                'delivery_longitude' => ['required', 'string'],
+                'delivery_latitude' => ['required', 'string'],
+                'delivery_type' => ['required', 'in:delivery,pickup'],
+                'payment_from' => ['required', 'in:wallet,card'],
+                'delivery_instruction' => ['string', 'nullable'],
+            ]);
 
+            $response = $this->service->verifyPayment($validated);
+
+            return $this->success("Payment details", $response, 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
     }
 
     public function orderProduct()

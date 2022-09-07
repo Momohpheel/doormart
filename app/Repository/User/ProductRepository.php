@@ -5,15 +5,18 @@ use App\Models\User;
 use App\Models\Vendor;
 use App\Models\Product;
 use App\Models\Cart;
+use App\Models\Order;
 use App\Repository\Interface\User\ProductRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use App\Trait\Response;
+use App\Trait\Token;
 use App\Models\UserWallet;
 
 class ProductRepository implements ProductRepositoryInterface
 {
 
-    use Response;
+    use Response, Token;
 
     public function addToCart(array $request)
     {
@@ -45,7 +48,7 @@ class ProductRepository implements ProductRepositoryInterface
         $items = array();
         $price = 0;
         $deliveryfee = 0;
-        $cart = Cart::with(['user','product', 'vendor'])->where('user_id', auth()->user()->id)->where('category_id', $id)->get();
+        $cart = Cart::with(['user','product', 'vendor'])->where('user_id', auth()->user()->id)->where('category_id', $id)->where('status', 'not paid')->get();
 
         array_push($items, $cart);
 
@@ -211,11 +214,69 @@ class ProductRepository implements ProductRepositoryInterface
     {
         //tx_ref
 
+        $orderarr = array();
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer sk_test_f2a6d1d7f41d7d5e23c4221cf683a56b03ea3a81',
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json'
+        ])->get("https://api.paystack.co/transaction/verify/".$request['txref']);
+
+            //1.verify payment
+            //2.chnge cart status to paid
+            //3.add cart to order
+
+
+            if ($response->successful()){
+
+                $body = $response->json();
+
+                if ($body['data']['status'] == "success"){
+
+                    // $trxlog = new TransactionLog;
+
+
+                    foreach ($request['cart'] as $cart){
+                        $bag = Cart::where('id', $cart['id'])->first();
+                        $bag->status = "paid";
+                        $bag->save();
+
+                        $order = new Order;
+                        $order->orderId = $this->orderId();
+                        $order->cart_id = $bag->id;
+                        $order->user_id = $bag->user_id;
+                        $order->vendor_id = $bag->vendor_id;
+                        $order->delivery_address = $request['delivery_address'];
+                        $order->delivery_latitude = $request['delivery_latitude'];
+                        $order->delivery_longitude = $request['delivery_longitude'];
+                        $order->delivery_type = $request['delivery_type'];
+                        $order->payment_from = $request['payment_from'];
+                        $order->delivery_instruction = $request['delivery_instruction'];
+                        $order->status = 'paid';
+
+                        $order->save();
+
+                        array_push($orderarr, $order);
+                    }
+
+
+
+                    return $orderarr;
+                   // $amount = $body['data']['amount']/100;
+
+                }else{
+                    throw new \Exception("Failed Transaction");
+                }
+            }else{
+                throw new \Exception("Failed Transaction");
+            }
+
 
     }
 
     public function payForOrderWallet(array $request)
     {
+
+        $orderarr = array();
         $wallet = UserWallet::where('user_id', auth()->user()->id)->first();
         $amount = 0;
         $vId = 0;
@@ -246,17 +307,44 @@ class ProductRepository implements ProductRepositoryInterface
 
         if ((int)$wallet->amount > (int)$total) {
             $wallet->amount = $wallet->amount - $total;
+            //log wallet history
             $wallet->save();
 
+            foreach ($request['cart'] as $cart){
+                $bag = Cart::where('id', $cart['id'])->first();
+                $bag->status = "paid";
+                $bag->save();
 
-            $details = [
-                "amount" => $total,
-                "wallet_amount" => $wallet->amount
-            ];
+                $order = new Order;
+                $order->orderId = $this->orderId();
+                $order->cart_id = $bag->id;
+                $order->user_id = $bag->user_id;
+                $order->vendor_id = $bag->vendor_id;
+                $order->delivery_address = $request['delivery_address'];
+                $order->delivery_latitude = $request['delivery_latitude'];
+                $order->delivery_longitude = $request['delivery_longitude'];
+                $order->delivery_type = $request['delivery_type'];
+                $order->payment_from = 'wallet';
+                $order->delivery_instruction = $request['delivery_instruction'];
+                $order->status = 'paid';
+
+                $order->save();
+
+                array_push($orderarr, $order);
+            }
+
+
+
+            return $orderarr;
+
+            // $details = [
+            //     "amount" => $total,
+            //     "wallet_amount" => $wallet->amount
+            // ];
 
             //update order db
 
-            return $details;
+            //return $details;
         }
         else{
             throw new \Exception("Amount in wallet is insuffecient to complete order");

@@ -27,4 +27,16 @@ trait Token
         return $randomString;
     }
 
+    public function orderId() {
+        $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $randomString = '';
+
+        for ($i = 0; $i < 4; $i++) {
+            $index = rand(0, strlen($characters) - 1);
+            $randomString .= $characters[$index];
+        }
+
+        return $randomString;
+    }
+
 }

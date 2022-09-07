@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('delivery_longitude', 11,7)->nullable();
             $table->enum('delivery_type', ['delivery', 'pickup'])->default('delivery');
             $table->enum('payment_from', ['wallet', 'card']);
-            $table->foreignId('rider_id')->constrained('riders')->nullable();
+            $table->foreignId('rider_id')->nullable()->constrained('riders');
             $table->string('delivery_instruction')->nullable();
             $table->boolean('vendor_accepted_order')->default(false);
             $table->boolean('rider_accepted_order')->default(false);
