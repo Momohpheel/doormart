@@ -95,8 +95,6 @@ class ProductController extends Controller
     public function setDeliveryFee(Request $request)
     {
 
-
-
             $validated = $request->validate([
                 "logitude" => "required|string",
                 "latitude" => "required|string",
@@ -144,7 +142,7 @@ class ProductController extends Controller
 
     }
 
-    public function verifyPayment(array $request)
+    public function verifyPayment(Request $request)
     {
         try{
             $validated = $request->validate([
@@ -154,7 +152,7 @@ class ProductController extends Controller
                 'delivery_longitude' => ['required', 'string'],
                 'delivery_latitude' => ['required', 'string'],
                 'delivery_type' => ['required', 'in:delivery,pickup'],
-                'payment_from' => ['required', 'in:wallet,card'],
+                'payment_from' => ['required', 'in:card'],
                 'delivery_instruction' => ['string', 'nullable'],
             ]);
 
@@ -165,21 +163,6 @@ class ProductController extends Controller
             throw new ErrorException($e->getMessage());
         }
     }
-
-    public function orderProduct()
-    {
-        //buy - cart id, userid, status, delivery address, logitude, latitude, (rider longitude, latitude),, delivery time,  delivery/pickup
-	    //amount, payment_from, delivery amount, rider_id, order_Accepted, dispatcher_confirmed, dispatcher_to_vendor, order_received,
-        //order_arrived, order_received
-	    //delivery instruction, delivery time,
-
-
-
-        //verifies payment - check if wallet/card
-        //connects to rider
-        //add data to order
-    }
-
 
 
 
@@ -208,6 +191,25 @@ class ProductController extends Controller
 
     }
 
+
+    public function getOrders()
+    {
+        $response = $this->service->getOrders();
+
+        return $this->success("Orders", $response, 200);
+
+    }
+
+
+    public function getSingleOrder(int $id)
+    {
+        if (!is_numeric($id)) throw new ErrorException("Invald ID: ");
+
+        $response = $this->service->getSingleOrder($id);
+
+        return $this->success("Orders", $response, 200);
+
+    }
 
     //buy - move to order, payment method (paystack/wallet)
 

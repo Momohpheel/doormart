@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repository\Interface\Rider\OrderRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
+use App\Models\ErrorException;
 
 class OrderController extends Controller
 {
@@ -20,14 +21,41 @@ class OrderController extends Controller
     }
 
 
-    public function getAllRiderOrders(array $request)
+    public function getAllRequestedOrders(Request $request)
+    {
+        try
+        {
+            $response = $this->service->getAllRequestedOrders();
+
+            return $this->success("Open Orders", $response, 200);
+
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+    }
+
+
+
+    public function getAllCompletedtedOrders(Request $request)
+    {
+        try
+        {
+
+        }catch(Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+    }
+
+
+
+    public function getAllRiderOrders(Request $request)
     {
 
         try
         {
 
         }catch(Exception $e){
-            return $this->error($e->getMessage(), 400);
+            throw new ErrorException($e->getMessage());
         }
 
     }

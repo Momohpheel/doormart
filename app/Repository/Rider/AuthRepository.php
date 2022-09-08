@@ -6,6 +6,7 @@ use App\Repository\Interface\Rider\AuthRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
 use App\Trait\Wallet;
+use Illuminate\Support\Facades\Hash;
 
 
 class AuthRepository implements AuthRepositoryInterface
@@ -16,11 +17,8 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function login(array $request)
     {
-
         try
         {
-
-
             $rider = Rider::where('phone', $request['phone'])->first();
 
             if ($rider){
@@ -35,17 +33,17 @@ class AuthRepository implements AuthRepositoryInterface
 
 
                 }else{
-                    return "Password or Email incorrect";
+                    throw new \Exception("Password or Email incorrect");
                 }
 
 
             }else{
-                return $this->error("Rider not found");
+                throw new \Exception("Rider not found");
 
             }
 
         }catch(Exception $e){
-            return $this->error($e->getMessage(), 400);
+            throw new \Exception($e->getMessage());
         }
 
     }
@@ -63,13 +61,13 @@ class AuthRepository implements AuthRepositoryInterface
             return $user;
 
         }else{
-            return "Old Password is wrong";
+            throw new \Exception( "Old Password is wrong");
         }
     }
 
-    public function resetPassword()
+    public function resetPassword(array $request)
     {
-        $user = Rider::where('email', $request['email'])->first();
+        $user = Rider::where('phone', $request['phone'])->first();
         $user->password = Hash::make($request['password']);
         $user->save();
 
@@ -78,9 +76,9 @@ class AuthRepository implements AuthRepositoryInterface
     }
 
 
-    public function forgotPassword()
+    public function forgotPassword(array $request)
     {
-        $user = Rider::where('email', $request['email'])->first();
+        $user = Rider::where('phone', $request['phone'])->first();
 
         if ($user) {
             //token to phone number
@@ -103,9 +101,14 @@ class AuthRepository implements AuthRepositoryInterface
         return $rider;
     }
 
+    public function getProfile()
+    {
+
+    }
+
     public function setStatus()
     {
-        $user = Rider::where('email', $request['email'])->first();
+        $user = Rider::where('id', auth()->user()->id)->first();
 
         if ($user) {
 

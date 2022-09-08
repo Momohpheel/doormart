@@ -17,6 +17,8 @@ interface ProductRepositoryInterface{
     public function verifyPayment(array $request);
     public function payForOrderWallet(array $request);
     public function payForOrder(array $request);
+    public function getSingleOrder(int $id);
+    public function getOrders();
 
 }
 

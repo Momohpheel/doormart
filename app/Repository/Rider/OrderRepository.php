@@ -6,7 +6,9 @@ use App\Repository\Interface\Rider\OrderRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
 use App\Trait\Wallet;
-use App\Models\Orders;
+use App\Models\Order;
+use App\Models\Cart;
+use App\Models\Product;
 
 
 class OrderRepository implements OrderRepositoryInterface
@@ -15,14 +17,40 @@ class OrderRepository implements OrderRepositoryInterface
     use Response, Wallet;
 
 
-    public function getAllRequestedOrders(array $request)
+    public function getAllRequestedOrders()
     {
 
         try
         {
+            $orders = Order::with(['vendor', 'user'])->where('rider_id', null)->get();
+
+
+        foreach ($orders as $order) {
+            $cartss = array();
+            $productss = array();
+            $carts = json_decode($order->cart_id);
+            $products = json_decode($order->product_id);
+
+
+            foreach($carts as $cart){
+                $cart = Cart::where('id', $cart)->first();
+                array_push($cartss, $cart);
+            }
+
+            foreach($products as $product){
+                $product = Product::where('id', $product)->first();
+                array_push($productss, $product);
+            }
+
+            $order['carts'] = $cartss;
+            $order['products'] = $productss;
+        }
+
+
+        return $orders;
 
         }catch(Exception $e){
-            return $this->error($e->getMessage(), 400);
+            throw new \Exception($e->getMessage());
         }
 
     }

@@ -200,7 +200,7 @@ class ProductRepository implements ProductRepositoryInterface
         }
 
         $payment_details = [
-            "amount" => $amount + $deliveryfee,
+            "amount" => ($amount + $deliveryfee) * 100,
             "email" => auth()->user()->email,
             "tx_ref" => "duka_".rand(),
             "public_key" => config('app.public_key')
@@ -245,13 +245,16 @@ class ProductRepository implements ProductRepositoryInterface
                         $order->cart_id = $bag->id;
                         $order->user_id = $bag->user_id;
                         $order->vendor_id = $bag->vendor_id;
+                        $order->product_id = $bag->product_id;
                         $order->delivery_address = $request['delivery_address'];
                         $order->delivery_latitude = $request['delivery_latitude'];
                         $order->delivery_longitude = $request['delivery_longitude'];
                         $order->delivery_type = $request['delivery_type'];
-                        $order->payment_from = $request['payment_from'];
+                        $order->payment_from = 'card';
                         $order->delivery_instruction = $request['delivery_instruction'];
-                        $order->status = 'paid';
+                        $order->payment_status = 'paid';
+                        $order->amount =  $cart->price;
+                        $order->order_status = 'pending';
 
                         $order->save();
 
@@ -305,6 +308,7 @@ class ProductRepository implements ProductRepositoryInterface
 
         $total = $amount + $deliveryfee;
 
+        $cartdb = array();
         if ((int)$wallet->amount > (int)$total) {
             $wallet->amount = $wallet->amount - $total;
             //log wallet history
@@ -315,41 +319,106 @@ class ProductRepository implements ProductRepositoryInterface
                 $bag->status = "paid";
                 $bag->save();
 
+                array_push($cartdb, $cart['id']);
+            }
                 $order = new Order;
-                $order->orderId = $this->orderId();
-                $order->cart_id = $bag->id;
+                $order->orderId = "DK-".$this->orderId();
+                $order->cart_id = json_encode($cartdb);
                 $order->user_id = $bag->user_id;
                 $order->vendor_id = $bag->vendor_id;
+                $order->product_id = json_encode([$bag->product_id]);
                 $order->delivery_address = $request['delivery_address'];
                 $order->delivery_latitude = $request['delivery_latitude'];
                 $order->delivery_longitude = $request['delivery_longitude'];
                 $order->delivery_type = $request['delivery_type'];
                 $order->payment_from = 'wallet';
                 $order->delivery_instruction = $request['delivery_instruction'];
-                $order->status = 'paid';
+                $order->payment_status = 'paid';
+                $order->total_amount = $amount;
+                $order->delivery_fee = $deliveryfee;
+                $order->order_status = 'pending';
 
                 $order->save();
 
                 array_push($orderarr, $order);
-            }
+
 
 
 
             return $orderarr;
 
-            // $details = [
-            //     "amount" => $total,
-            //     "wallet_amount" => $wallet->amount
-            // ];
-
-            //update order db
-
-            //return $details;
         }
         else{
             throw new \Exception("Amount in wallet is insuffecient to complete order");
         }
 
+    }
+
+
+    public function getOrders()
+    {
+        // $cartss = array();
+        // $productss = array();
+        $orders = Order::with(['vendor', 'user'])->where('user_id', auth()->user()->id)->get();
+
+
+        foreach ($orders as $order) {
+            $cartss = array();
+            $productss = array();
+            $carts = json_decode($order->cart_id);
+            $products = json_decode($order->product_id);
+
+
+            foreach($carts as $cart){
+                $cart = Cart::where('id', $cart)->first();
+                array_push($cartss, $cart);
+            }
+
+            foreach($products as $product){
+                $product = Product::where('id', $product)->first();
+                array_push($productss, $product);
+            }
+
+            $order['carts'] = $cartss;
+            $order['products'] = $productss;
+        }
+
+
+        return $orders;
+    }
+
+
+    public function getSingleOrder(int $id)
+    {
+        $orders = Order::with(['vendor', 'user'])->where('id', $id)->where('user_id', auth()->user()->id)->first();
+
+        if ($orders) {
+
+            $cartss = array();
+            $productss = array();
+            $carts = json_decode($orders->cart_id);
+            $products = json_decode($orders->product_id);
+
+
+            foreach($carts as $cart){
+                $cart = Cart::where('id', $cart)->first();
+                array_push($cartss, $cart);
+            }
+
+            foreach($products as $product){
+                $product = Product::where('id', $product)->first();
+                array_push($productss, $product);
+            }
+
+            $orders['carts'] = $cartss;
+            $orders['products'] = $productss;
+
+
+
+            return $orders;
+        }else{
+            throw new \Exception("Order not found");
+        }
     }
 }
 

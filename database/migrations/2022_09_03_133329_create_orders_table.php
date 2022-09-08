@@ -15,8 +15,10 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('cart_id')->constrained('carts');
+            $table->string('orderId');
+            $table->json('cart_id');
             $table->foreignId('user_id')->constrained('users');
+            $table->json('product_id');
             $table->foreignId('vendor_id')->constrained('vendors');
             $table->string('delivery_address');
             $table->decimal('delivery_latitude', 11,7)->nullable();
@@ -31,7 +33,10 @@ return new class extends Migration
             $table->boolean('rider_received_order')->default(false);
             $table->boolean('order_arrived')->default(false);
             $table->boolean('user_received_order')->default(false);
-            $table->enum('status', ['paid', 'not paid']);
+            $table->enum('order_status', ['pending', 'ongoing', 'completed']);
+            $table->enum('payment_status', ['paid', 'not paid']);
+            $table->integer("delivery_fee");
+            $table->integer("total_amount");
             $table->softDeletes();
             $table->timestamps();
         });

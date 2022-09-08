@@ -8,6 +8,8 @@ use App\Http\Controllers\Vendor\ProductController;
 use App\Http\Controllers\Vendor\ProfileController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\Rider\AuthController as RiderAuthController;
+use App\Http\Controllers\Rider\OrderController as RiderOrderController;
 use App\Http\Controllers\User\ProductController as UserProductController;
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +45,11 @@ Route::prefix('user')->group(function () {
 
         });
 
+        Route::prefix('order')->group(function () {
+            Route::get('/', [UserProductController::class, 'getOrders']);
+            Route::get('/{id}', [UserProductController::class, 'getSingleOrder']);
+        });
+
         Route::prefix('cart')->group(function () {
             Route::post('/add', [UserProductController::class, 'addToCart']);
             Route::get('/{category_id}', [UserProductController::class, 'getCart']);
@@ -51,10 +58,11 @@ Route::prefix('user')->group(function () {
             Route::post('/increment/{cart_id}', [UserProductController::class, 'incrementQuantity']);
             Route::post('/decrement/{cart_id}', [UserProductController::class, 'decrementQuantity']);
             Route::post('/delivery/fee', [UserProductController::class, 'setDeliveryFee']);
-
             Route::post('/order/pay', [UserProductController::class, 'payForOrder']);
+            Route::post('/pay/verify', [UserProductController::class, 'verifyPayment']);
 
         });
+
 
 
 
@@ -101,4 +109,27 @@ Route::prefix('vendor')->group(function () {
         Route::post('logout', [VendorAuthController::class, 'logout']);
     });
 
+});
+
+
+Route::prefix('rider')->group(function () {
+    Route::post('login', [RiderAuthController::class, 'login']);
+
+    Route::prefix('password')->group(function () {
+        Route::post('reset', [RiderAuthController::class, 'resetPassword']);
+       // Route::post('otp', [RiderAuthController::class, 'checkForgotPasswordOtp']);
+        Route::post('forgot', [RiderAuthController::class, 'forgotPassword']);
+        Route::post('change', [RiderAuthController::class, 'changePassword'])->middleware('auth:rider');
+    });
+
+    Route::middleware(['auth:rider'])->group(function () {
+
+        Route::post('/profile/update', [RiderAuthController::class, 'updateProfile']);
+       // Route::get('/profile', [RiderAuthController::class, 'getProfile']);
+        Route::post('/status', [RiderAuthController::class, 'setStatuss']);
+
+        Route::prefix('orders')->group(function () {
+            Route::get('/all', [RiderOrderController::class, 'getAllRequestedOrders']);
+        });
+    });
 });
