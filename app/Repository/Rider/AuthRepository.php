@@ -33,7 +33,7 @@ class AuthRepository implements AuthRepositoryInterface
 
 
                 }else{
-                    throw new \Exception("Password or Email incorrect");
+                    throw new \Exception("Password or Phone incorrect");
                 }
 
 

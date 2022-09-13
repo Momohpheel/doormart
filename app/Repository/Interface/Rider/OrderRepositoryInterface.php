@@ -8,13 +8,14 @@ use Illuminate\Http\Request;
 interface OrderRepositoryInterface{
 
     public function getAllRequestedOrders();
-    public function getAllRiderOrders(array $request);
-    public function getAllCompletedtedOrders(array $request);
+    public function getAllRiderOrders();
+    public function getAllCompletedtedOrders();
     public function getOpenOrders();
     public function dashboard();
     public function getTransactionHistory();
-    public function acceptOrder();
+    public function acceptOrder(string $orderId);
     public function declineOrder();
+
 
 
 }

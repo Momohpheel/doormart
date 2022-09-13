@@ -40,8 +40,11 @@ class OrderController extends Controller
     {
         try
         {
+            $response = $this->service->getAllCompletedtedOrders();
 
-        }catch(Exception $e){
+            return $this->success("Completed Orders", $response, 200);
+
+        }catch(\Exception $e){
             throw new ErrorException($e->getMessage());
         }
     }
@@ -53,6 +56,9 @@ class OrderController extends Controller
 
         try
         {
+            $response = $this->service->getAllRiderOrders();
+
+            return $this->success("Rider Orders", $response, 200);
 
         }catch(Exception $e){
             throw new ErrorException($e->getMessage());
@@ -76,14 +82,56 @@ class OrderController extends Controller
 
     }
 
-    public function acceptOrder()
+    public function acceptOrder(string $orderId)
     {
+        try
+        {
+            $response = $this->service->acceptOrder($orderId);
 
+            return $this->success("Order ". $orderId ." Accepted", $response, 200);
+
+        }catch(Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
     }
 
-    public function declineOrder()
+    public function receiveOrder(string $orderId)
     {
+        try
+        {
+            $response = $this->service->receiveOrder($orderId);
 
+            return $this->success("Order ". $orderId ." Received", $response, 200);
+
+        }catch(Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+    }
+
+    public function orderArrived(string $orderId)
+    {
+        try
+        {
+            $response = $this->service->orderArrived($orderId);
+
+            return $this->success("Order ". $orderId ." Arrived", $response, 200);
+
+        }catch(Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+    }
+
+    public function userReceivedOrder(string $orderId)
+    {
+        try
+        {
+            $response = $this->service->userReceivedOrder($orderId);
+
+            return $this->success("User received Order - ". $orderId, $response, 200);
+
+        }catch(Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
     }
 
 }

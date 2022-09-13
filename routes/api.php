@@ -130,6 +130,12 @@ Route::prefix('rider')->group(function () {
 
         Route::prefix('orders')->group(function () {
             Route::get('/all', [RiderOrderController::class, 'getAllRequestedOrders']);
+            Route::get('/', [RiderOrderController::class, 'getAllRiderOrders']);
+            Route::get('/completed', [RiderOrderController::class, 'getAllCompletedtedOrders']);
+            Route::post('/accept/{orderId}', [RiderOrderController::class, 'acceptOrder']);
+            Route::post('/receive/{orderId}', [RiderOrderController::class, 'receiveOrder']);
+            Route::post('/arrive/{orderId}', [RiderOrderController::class, 'orderArrived']);
+            Route::post('/user/receive/{orderId}', [RiderOrderController::class, 'userReceivedOrder']);
         });
     });
 });
