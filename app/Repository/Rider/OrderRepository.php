@@ -19,7 +19,6 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getAllRequestedOrders()
     {
-
         try
         {
             $orders = Order::with(['vendor', 'user'])->where('rider_id', null)->get();
@@ -31,12 +30,10 @@ class OrderRepository implements OrderRepositoryInterface
         }catch(Exception $e){
             throw new \Exception($e->getMessage());
         }
-
     }
 
     public function getAllRiderOrders()
     {
-
         try
         {
             $orders = Order::with(['vendor', 'user'])->where('rider_id', auth()->user()->id)->where('order_status', 'ongoing')->get();
@@ -68,6 +65,21 @@ class OrderRepository implements OrderRepositoryInterface
         }
 
 
+    }
+
+    public function getSingleOrder($orderId)
+    {
+        try
+        {
+            $order = Order::with(['vendor', 'user'])->where('orderId', $orderId)->where('rider_id', auth()->user()->id)->where('order_status', 'completed')->first();
+
+            $single = $this->getOrders($order);
+
+            return $single;
+
+        }catch(Exception $e){
+            throw new \Exception($e->getMessage());
+        }
     }
 
     public function getOrders($orders)
@@ -113,7 +125,6 @@ class OrderRepository implements OrderRepositoryInterface
     {
         try{
             $order = Order::where('orderId', $id)->first();
-
 
             if ($order->rider_id && $order->order_status == 'pending'){
                 $order->rider_id = auth()->user()->id;
@@ -161,10 +172,8 @@ class OrderRepository implements OrderRepositoryInterface
 
 
             if (($order->rider_id == auth()->user()->id) && ($order->order_status == 'ongoing')){
-
                 $order->order_arrived = true;
                 $order->save();
-
                 return $order;
             }
 
@@ -186,6 +195,7 @@ class OrderRepository implements OrderRepositoryInterface
             if (($order->rider_id == auth()->user()->id) && ($order->order_status == 'ongoing')){
 
                 $order->user_received_order = true;
+                $order->order_status = 'completed';
                 $order->save();
 
                 return $order;

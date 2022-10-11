@@ -66,10 +66,6 @@ class OrderController extends Controller
 
     }
 
-    public function getOpenOrders()
-    {
-
-    }
 
     public function dashboard()
     {
