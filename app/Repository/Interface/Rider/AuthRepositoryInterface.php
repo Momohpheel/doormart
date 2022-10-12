@@ -12,6 +12,7 @@ interface AuthRepositoryInterface{
     public function resetPassword(array $request);
     public function forgotPassword(array $request);
     public function setStatus();
+
     public function updateProfile(array $request);
     public function logout();
 }

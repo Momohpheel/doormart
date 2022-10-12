@@ -51,7 +51,6 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getAllCompletedtedOrders()
     {
-
         try
         {
             $orders = Order::with(['vendor', 'user'])->where('rider_id', auth()->user()->id)->where('order_status', 'completed')->get();
@@ -112,7 +111,18 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function dashboard()
     {
+        $completed = $this->getAllCompletedtedOrders();
 
+        $orders = Order::with(['vendor', 'user'])->where('rider_id', auth()->user()->id)->where('order_status', 'completed')->latest()->limit(4)->get();
+
+        $data =  [
+            "delivered_orders" => count($completed),
+            "distance_covered" => 0,
+            "recent_orders" => $orders
+        ];
+
+
+        return $data;
     }
 
 

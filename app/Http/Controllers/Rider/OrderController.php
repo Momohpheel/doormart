@@ -69,7 +69,15 @@ class OrderController extends Controller
 
     public function dashboard()
     {
+        try
+        {
+            $response = $this->service->dashboard();
 
+            return $this->success("Rider Dashboard", $response, 200);
+
+        }catch(Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
     }
 
 

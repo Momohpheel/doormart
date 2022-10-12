@@ -125,7 +125,7 @@ Route::prefix('rider')->group(function () {
     Route::middleware(['auth:rider'])->group(function () {
 
         Route::post('/profile/update', [RiderAuthController::class, 'updateProfile']);
-       // Route::get('/profile', [RiderAuthController::class, 'getProfile']);
+        Route::get('/dashboard', [RiderOrderController::class, 'dashboard']);
         Route::post('/status', [RiderAuthController::class, 'setStatuss']);
 
         Route::prefix('orders')->group(function () {
