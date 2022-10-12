@@ -103,7 +103,9 @@ class AuthRepository implements AuthRepositoryInterface
 
     public function getProfile()
     {
+        $rider = Rider::where('id', auth()->user()->id)->first();
 
+        return $rider;
     }
 
     public function setStatus()

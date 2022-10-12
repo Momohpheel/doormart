@@ -14,6 +14,7 @@ interface AuthRepositoryInterface{
     public function setStatus();
 
     public function updateProfile(array $request);
+    public function getProfile();
     public function logout();
 }
 

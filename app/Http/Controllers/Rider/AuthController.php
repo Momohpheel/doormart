@@ -105,6 +105,19 @@ class AuthController extends Controller
         }
     }
 
+    public function getProfile(Request $request)
+    {
+        try{
+
+
+            $response = $this->service->getProfile();
+
+            return $this->success("Rider Profile", $response, 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+    }
+
     public function setStatus()
     {
         try{
