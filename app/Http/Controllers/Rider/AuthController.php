@@ -60,6 +60,7 @@ class AuthController extends Controller
     {
         try{
             $validated = $request->validate([
+                'rider_id' => 'required',
                 'phone' => 'required',
                 'password' => 'required',
             ]);
@@ -124,6 +125,22 @@ class AuthController extends Controller
             $response = $this->service->setStatus();
 
             return $this->success("Status saved", $response, 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+    }
+
+    public function checkForgotPasswordOtp(Request $request)
+    {
+        try{
+            $validated = $request->validate([
+                'otp' => 'string|nullable',
+            ]);
+
+            $response = $this->service->checkForgotPasswordOtp($validated);
+
+            return $this->success("OTP", $response, 200);
+
         }catch(\Exception $e){
             throw new ErrorException($e->getMessage());
         }

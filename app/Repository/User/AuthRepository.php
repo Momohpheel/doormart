@@ -8,6 +8,7 @@ use App\Models\ReferralHistory;
 use App\Repository\Interface\User\AuthRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
+use Illuminate\Support\Facades\Http;
 use App\Trait\Token;
 use App\Trait\Wallet;
 
@@ -70,11 +71,11 @@ class AuthRepository implements AuthRepositoryInterface
                 return $user;
             }
 
-            return $this->error("User not found");
+            throw new \Exception("User not found");
 
 
         }catch(Exception $e){
-            return $this->error($e->getMessage(), 400);
+            throw new \Exception($e->getMessage());
         }
 
     }
@@ -85,14 +86,36 @@ class AuthRepository implements AuthRepositoryInterface
 
         if ($check){
             $otp = $check->otp;
+            $sms = "Hello ".(string)$user->name.",\nWelcome to Duka\nYour OTP is ". (string)$otp;
+            $this->sendSms("234".$user->phone, $sms, 'Duka');
         }else{
             $otp = new OTP;
             $otp->user_id = $user->id;
             $otp->otp = $this->token();
             $otp->save();
+
+            $sms = "Hello ".(string)$user->name.",\nWelcome to Duka\nYour OTP is ". (string)$otp;
+            $this->sendSms("234".$user->phone, $sms, 'Duka');
         }
 
 
+    }
+
+    public function sendSms($to, $sms, $from)
+    {
+        try{
+
+            $api_key = "TLRqTF3e8xMhpV9puHwuoiN1nxYki49hcPTBtK32QP672OygbwVDEzHbep9yTe";
+
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json'
+            ])->post('https://api.ng.termii.com/api/sms/send?to='. $to .'&from=Duka&sms='. $sms .'&type=plain&channel=generic&api_key='.$api_key);
+
+           \Log::info($response);
+        }catch(Exception $e){
+            return $e->getMessage();
+        }
     }
 
     public function verifyOtp(array $request)

@@ -10,4 +10,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Agency extends Model
 {
     use HasFactory, HasApiTokens, SoftDeletes;
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 }
+

@@ -117,7 +117,7 @@ Route::prefix('rider')->group(function () {
 
     Route::prefix('password')->group(function () {
         Route::post('reset', [RiderAuthController::class, 'resetPassword']);
-       // Route::post('otp', [RiderAuthController::class, 'checkForgotPasswordOtp']);
+       Route::post('otp', [RiderAuthController::class, 'checkForgotPasswordOtp']);
         Route::post('forgot', [RiderAuthController::class, 'forgotPassword']);
         Route::post('change', [RiderAuthController::class, 'changePassword'])->middleware('auth:rider');
     });

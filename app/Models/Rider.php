@@ -16,4 +16,17 @@ class Rider extends Model
         'phone',
         'password'
     ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+        "deleted_at",
+        "created_at",
+        "updated_at"
+    ];
 }

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repository\Interface\Rider\OrderRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
-use App\Models\ErrorException;
+use App\Exceptions\ErrorException;
 
 class OrderController extends Controller
 {

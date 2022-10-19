@@ -8,6 +8,7 @@ use App\Http\Requests\RegisterUser;
 use App\Http\Requests\UserLogin;
 use Illuminate\Http\Request;
 use App\Trait\Response;
+use App\Exceptions\ErrorException;
 
 class UserAuthController extends Controller
 {
@@ -51,8 +52,8 @@ class UserAuthController extends Controller
 
             return $this->success("Login", $response, 200);
 
-        }catch(Exception $e){
-            return $this->error($e->getMessage());
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
         }
     }
 
