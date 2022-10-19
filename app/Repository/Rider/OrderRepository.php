@@ -136,7 +136,7 @@ class OrderRepository implements OrderRepositoryInterface
         try{
             $order = Order::where('orderId', $id)->first();
 
-            if ($order->rider_id && $order->order_status == 'pending'){
+            if ($order->rider_id == null && $order->order_status == 'pending'){
                 $order->rider_id = auth()->user()->id;
                 $order->order_status = 'ongoing';
                 $order->rider_accepted_order = true;

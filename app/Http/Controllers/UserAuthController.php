@@ -63,14 +63,19 @@ class UserAuthController extends Controller
      */
     public function verify(Request $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|integer',
-            'otp' => 'required|string'
-        ]);
+        try{
+            $validated = $request->validate([
+                'user_id' => 'required|integer',
+                'otp' => 'required|string'
+            ]);
 
-        $response = $this->userService->verifyOtp($validated);
+            $response = $this->userService->verifyOtp($validated);
 
-        return $this->success("User logged in", ['token' => $response], 200);
+            return $this->success("User logged in", ['token' => $response], 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+
     }
 
 

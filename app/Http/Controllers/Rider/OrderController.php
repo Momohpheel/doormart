@@ -94,7 +94,7 @@ class OrderController extends Controller
 
             return $this->success("Order ". $orderId ." Accepted", $response, 200);
 
-        }catch(Exception $e){
+        }catch(\Exception $e){
             throw new ErrorException($e->getMessage());
         }
     }

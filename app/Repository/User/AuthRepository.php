@@ -45,8 +45,10 @@ class AuthRepository implements AuthRepositoryInterface
 
             $this->createWallet($user->id);
 
-            //referral history
-            $this->storeReferal($user->id, $refUser->id);
+            if (isset($request['referral_code'])){
+                //referral history
+                $this->storeReferal($user->id, $refUser->id);
+            }
 
             return $user;
 
