@@ -11,6 +11,8 @@ use App\Trait\Response;
 use Illuminate\Support\Facades\Http;
 use App\Trait\Token;
 use App\Trait\Wallet;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RegisterMail;
 
 
 class AuthRepository implements AuthRepositoryInterface
@@ -43,6 +45,8 @@ class AuthRepository implements AuthRepositoryInterface
 
             $this->sendOtp($user);
 
+            Mail::to($user->email)->send(new RegisterMail($user));
+
             $this->createWallet($user->id);
 
             if (isset($request['referral_code'])){
@@ -59,6 +63,10 @@ class AuthRepository implements AuthRepositoryInterface
 
     }
 
+    public function sendEmail()
+    {
+
+    }
 
     public function login(array $request)
     {
