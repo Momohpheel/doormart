@@ -202,7 +202,7 @@ class AuthRepository implements AuthRepositoryInterface
                throw new \Exception("Wrong OTP");
             }
         }else{
-            return $this->error("User not found");
+            throw new \Exception("User not found");
         }
 
 
