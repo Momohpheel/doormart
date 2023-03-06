@@ -77,6 +77,28 @@ class AuthRepository implements AuthRepositoryInterface
 
             }
 
+            if (!$user){
+                return $this->error("User not found");
+            }
+
+            $check = Hash::check($request['password'], $user->password);
+
+            if (!$check){
+                return "Password or Email incorrect";
+            }
+
+            if (!$user->admin_verified) {
+                return "Admin hasn't verified you yet, plese be patient!";
+            }
+
+            if (!$user->email_verified_at){
+                return "User Email has not been verified";
+            }
+
+            $token = $user->createToken('authToken');
+            $user['access_token'] =  $token->plainTextToken;
+            return $user;
+
 
 
         }catch(Exception $e){
@@ -110,9 +132,10 @@ class AuthRepository implements AuthRepositoryInterface
             $user->notify(new VendorForgotPasswordEmail($user));
 
             return true;
-        }else{
-            return "User doesn't exist";
         }
+        // }else{
+            return "User doesn't exist";
+        // }
 
     }
 

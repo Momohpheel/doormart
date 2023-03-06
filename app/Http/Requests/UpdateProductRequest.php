@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -33,5 +34,12 @@ class UpdateProductRequest extends FormRequest
             'price' => ['numeric', 'integer'],
             'product_category_id' => ['numeric', 'exists:product_categories,id'],
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
     }
 }

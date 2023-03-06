@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class RegisterVendor extends FormRequest
 {
@@ -33,5 +34,12 @@ class RegisterVendor extends FormRequest
             'password' => ['required', 'string'],
             'public_image' =>['required', 'image', 'mimes:png,jpg', 'max:2049'],
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
     }
 }

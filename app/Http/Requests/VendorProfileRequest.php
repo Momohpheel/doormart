@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class VendorProfileRequest extends FormRequest
 {
@@ -30,5 +31,12 @@ class VendorProfileRequest extends FormRequest
             'region' => ['integer', 'exists:regions,id'],
             'accountNumber' => ['string', 'min:10', 'max:10']
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
     }
 }

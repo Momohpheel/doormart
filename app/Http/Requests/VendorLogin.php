@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class VendorLogin extends FormRequest
 {
@@ -27,5 +28,12 @@ class VendorLogin extends FormRequest
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string']
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
     }
 }

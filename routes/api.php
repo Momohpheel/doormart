@@ -31,6 +31,8 @@ Route::prefix('user')->group(function () {
     Route::post('login', [UserAuthController::class, 'userLogin']);
     Route::post('otp/verify', [UserAuthController::class, 'verify']);
 
+    Route::post('otp/resend', [UserAuthController::class, 'resendOtp']);
+
 
     Route::middleware(['auth:user'])->group(function () {
 

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class WorkingDayRequest extends FormRequest
 {
@@ -28,5 +29,12 @@ class WorkingDayRequest extends FormRequest
             'time.*.opening' => ['required', 'string'],
             'time.*.closing' => ['required', 'string']
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
     }
 }

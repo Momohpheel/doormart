@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Http;
 use App\Trait\Token;
 use App\Trait\Wallet;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\RegisterMail;
+//use App\Mail\RegisterMail;
+use App\Notifications\RegisterMail;
+use App\Notifications\LoginMail;
+use App\Notifications\ResendOtp;
 
 
 class AuthRepository implements AuthRepositoryInterface
@@ -45,7 +48,8 @@ class AuthRepository implements AuthRepositoryInterface
 
             $this->sendOtp($user);
 
-            Mail::to($user->email)->send(new RegisterMail($user));
+
+            //Mail::to($user->email)->send(new RegisterMail($user));
 
             $this->createWallet($user->id);
 
@@ -63,10 +67,7 @@ class AuthRepository implements AuthRepositoryInterface
 
     }
 
-    public function sendEmail()
-    {
 
-    }
 
     public function login(array $request)
     {
@@ -76,7 +77,7 @@ class AuthRepository implements AuthRepositoryInterface
             $user = User::where('phone', $request['phone'])->first();
 
             if ($user){
-                $this->sendOtp($user);
+                $this->loginsendOtp($user);
 
                 return $user;
             }
@@ -90,13 +91,14 @@ class AuthRepository implements AuthRepositoryInterface
 
     }
 
-    public function sendOtp(User $user)
+    public function loginsendOtp(User $user)
     {
         $check = OTP::where("user_id", $user->id)->first();
 
         if ($check){
             $otp = $check->otp;
-            $sms = "Hello ".(string)$user->name.",\nWelcome to Duka\nYour OTP is ". (string)$otp;
+            $sms = "Hello ".(string)$user->name.", Welcome to Duka! Your OTP is ". (string)$otp. ", please eneter it in 15 minutes. Do not share with anyone!";
+            $user->notify(new LoginMail($user, $otp));
             $this->sendSms("234".$user->phone, $sms, 'Duka');
         }else{
             $otp = new OTP;
@@ -104,12 +106,69 @@ class AuthRepository implements AuthRepositoryInterface
             $otp->otp = $this->token();
             $otp->save();
 
-            $sms = "Hello ".(string)$user->name.",\nWelcome to Duka\nYour OTP is ". (string)$otp;
+            $sms = "Hello ".(string)$user->name.", Welcome to Duka! Your OTP is ". (string)$otp->otp. ", please eneter it in 15 minutes. Do not share with anyone!";
+            $user->notify(new LoginMail($user, $otp->otp));
             $this->sendSms("234".$user->phone, $sms, 'Duka');
         }
 
 
     }
+
+    public function sendOtp(User $user)
+    {
+        $check = OTP::where("user_id", $user->id)->first();
+
+        if ($check){
+            $otp = $check->otp;
+            $sms = "Hello ".(string)$user->name.", Welcome to Duka! Your OTP is ". (string)$otp. ", please eneter it in 15 minutes. Do not share with anyone!";
+            $user->notify(new RegisterMail($user, $otp));
+            $this->sendSms("234".$user->phone, $sms, 'Duka');
+        }else{
+            $otp = new OTP;
+            $otp->user_id = $user->id;
+            $otp->otp = $this->token();
+            $otp->save();
+
+            $sms = "Hello ".(string)$user->name.", Welcome to Duka! Your OTP is ". (string)$otp->otp. ", please eneter it in 15 minutes. Do not share with anyone!";
+            $user->notify(new RegisterMail($user, $otp->otp));
+            $this->sendSms("234".$user->phone, $sms, 'Duka');
+        }
+
+
+    }
+
+    public function resendOtp(array $request)
+    {
+        $user = User::where('id', $request['user_id'])->first();
+
+        if ($user){
+            $check = OTP::where("user_id", $user->id)->first();
+
+            if ($check){
+                $otp = $check->otp;
+                $sms = "Hello ".(string)$user->name.", Welcome to Duka! Your OTP is ". (string)$otp. ", please eneter it in 15 minutes. Do not share with anyone!";
+                $user->notify(new ResendOtp($user, $otp));
+                $this->sendSms("234".$user->phone, $sms, 'Duka');
+            }else{
+                $otp = new OTP;
+                $otp->user_id = $user->id;
+                $otp->otp = $this->token();
+                $otp->save();
+
+                $sms = "Hello ".(string)$user->name.", Welcome to Duka! Your OTP is ". (string)$otp->otp. ", please eneter it in 15 minutes. Do not share with anyone!";
+                $user->notify(new ResendOtp($user, $otp->otp));
+                $this->sendSms("234".$user->phone, $sms, 'Duka');
+            }
+        }else{
+            throw new \Exception("User not found");
+        }
+
+
+
+    }
+
+
+
 
     public function sendSms($to, $sms, $from)
     {

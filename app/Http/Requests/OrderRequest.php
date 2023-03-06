@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class OrderRequest extends FormRequest
 {
@@ -39,5 +40,12 @@ class OrderRequest extends FormRequest
             'payment_from' => ['required', 'in:wallet,card'],
             'delivery_instruction' => ['string'],
         ];
+    }
+
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
     }
 }

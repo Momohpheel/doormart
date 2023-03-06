@@ -29,7 +29,7 @@ class RegisterMail extends Mailable
      */
     public function build()
     {
-        return $this->markdown('email.allrisk')
+        return $this->markdown('email.register')
                     ->with('user', $this->model);
     }
 }

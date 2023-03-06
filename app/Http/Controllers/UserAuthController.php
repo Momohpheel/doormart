@@ -29,12 +29,16 @@ class UserAuthController extends Controller
      */
     public function registerUser(RegisterUser $request)
     {
+        try{
 
-        $validated = $request->validated();
+            $validated = $request->validated();
 
-        $response = $this->userService->register($validated);
+            $response = $this->userService->register($validated);
 
-        return $this->success("OTP has been sent", $response, 200);
+            return $this->success("OTP has been sent", $response, 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
     }
 
     /**
@@ -81,6 +85,22 @@ class UserAuthController extends Controller
 
     public function logout()
     {
+
+    }
+
+    public function resendOtp(Request $request)
+    {
+        try{
+            $validated = $request->validate([
+                'user_id' => 'required|integer',
+            ]);
+
+            $response = $this->userService->resendOtp($validated);
+
+            return $this->success("OTP sent", null, 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
 
     }
 
