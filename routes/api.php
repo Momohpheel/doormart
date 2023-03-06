@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\RegionController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\VendorAuthController;
 use App\Http\Controllers\Vendor\ProductController;
@@ -30,7 +32,6 @@ Route::prefix('user')->group(function () {
     Route::post('register', [UserAuthController::class, 'registerUser']);
     Route::post('login', [UserAuthController::class, 'userLogin']);
     Route::post('otp/verify', [UserAuthController::class, 'verify']);
-
     Route::post('otp/resend', [UserAuthController::class, 'resendOtp']);
 
 
@@ -52,6 +53,11 @@ Route::prefix('user')->group(function () {
             Route::get('/{id}', [UserProductController::class, 'getSingleOrder']);
         });
 
+        Route::prefix('region')->group(function () {
+            Route::get('/', [UserController::class, 'getRegions']);
+
+        });
+
         Route::prefix('cart')->group(function () {
             Route::post('/add', [UserProductController::class, 'addToCart']);
             Route::get('/{category_id}', [UserProductController::class, 'getCart']);
@@ -64,13 +70,6 @@ Route::prefix('user')->group(function () {
             Route::post('/pay/verify', [UserProductController::class, 'verifyPayment']);
 
         });
-
-
-
-
-
-
-
     });
 
 });
@@ -140,5 +139,17 @@ Route::prefix('rider')->group(function () {
             Route::post('/arrive/{orderId}', [RiderOrderController::class, 'orderArrived']);
             Route::post('/user/receive/{orderId}', [RiderOrderController::class, 'userReceivedOrder']);
         });
+    });
+});
+
+
+Route::prefix('admin')->group(function () {
+    Route::post('login', []);
+
+    Route::prefix('region')->group(function () {
+        Route::post('add', []);
+        Route::post('get', []);
+        Route::post('update', []);
+        Route::post('delete', []);
     });
 });
