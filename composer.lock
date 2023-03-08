@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c798f81b8a54d14d0d45168bb7db8f1d",
+    "content-hash": "52236b3d22e57eee09a33f8920bb3a89",
     "packages": [
         {
             "name": "brick/math",
@@ -64,22 +64,22 @@
         },
         {
             "name": "cloudinary-labs/cloudinary-laravel",
-            "version": "2.0.3",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/cloudinary-devs/cloudinary-laravel.git",
-                "reference": "f331b770b277a75dbde3c61bf1e50096b3e68104"
+                "url": "https://github.com/cloudinary-labs/cloudinary-laravel.git",
+                "reference": "f1b74dd7202b1314c8c8729be5b32dc7c3f5427d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cloudinary-devs/cloudinary-laravel/zipball/f331b770b277a75dbde3c61bf1e50096b3e68104",
-                "reference": "f331b770b277a75dbde3c61bf1e50096b3e68104",
+                "url": "https://api.github.com/repos/cloudinary-labs/cloudinary-laravel/zipball/f1b74dd7202b1314c8c8729be5b32dc7c3f5427d",
+                "reference": "f1b74dd7202b1314c8c8729be5b32dc7c3f5427d",
                 "shasum": ""
             },
             "require": {
                 "cloudinary/cloudinary_php": "^2.0",
                 "ext-json": "*",
-                "illuminate/support": "~6|~7|~8|^9.0|^10.0",
+                "illuminate/support": "~6|~7|~8|^9.0",
                 "php": "^8.0.2"
             },
             "require-dev": {
@@ -129,10 +129,10 @@
                 "laravel"
             ],
             "support": {
-                "issues": "https://github.com/cloudinary-devs/cloudinary-laravel/issues",
-                "source": "https://github.com/cloudinary-devs/cloudinary-laravel/tree/2.0.3"
+                "issues": "https://github.com/cloudinary-labs/cloudinary-laravel/issues",
+                "source": "https://github.com/cloudinary-labs/cloudinary-laravel/tree/2.0.1"
             },
-            "time": "2023-03-01T15:07:23+00:00"
+            "time": "2022-06-03T13:17:15+00:00"
         },
         {
             "name": "cloudinary/cloudinary_php",

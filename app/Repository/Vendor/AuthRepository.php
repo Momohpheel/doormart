@@ -28,14 +28,14 @@ class AuthRepository implements AuthRepositoryInterface
                 'phone' => $request['phone'],
                 'password'  => Hash::make($request['password']),
                 'category_id' => $request['category_id'], //restaurant, pharmacy
-                'company_proof' => cloudinary()->upload($request->file('proof')->getRealPath())->getSecurePath(),
-                'public_image' => cloudinary()->upload($request->file('public_image')->getRealPath())->getSecurePath(),
+                'company_proof' => $request['proof'],
+                'public_image' => $request['public_image'],
             ]);
 
             return $user;
 
         }catch(Exception $e){
-            return $this->error($e->getMessage(), 400);
+            throw new \Exception($e->getMessage());
         }
 
 
@@ -50,34 +50,6 @@ class AuthRepository implements AuthRepositoryInterface
 
             $user = Vendor::where('email', $request['email'])->first();
 
-            // if ($user){
-
-            //     $check = Hash::check($request['password'], $user->password);
-
-            //     if ($check){
-            //         if ($user->email_verified_at){
-            //             if ($user->admin_verified) {
-
-            //                     $token = $user->createToken('authToken');
-            //                     $user['access_token'] =  $token->plainTextToken;
-            //                     return $user;
-
-            //             }else{
-            //                 return "Admin hasn't verified you yet, plese be patient!";
-            //             }
-            //         }else{
-            //             return "User Email has not been verified";
-            //         }
-
-            //     }else{
-            //         return "Password or Email incorrect";
-            //     }
-
-
-            // }else{
-            //     return $this->error("User not found");
-
-            // }
 
             if (!$user){
                 throw new \Exception("User not found");

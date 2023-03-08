@@ -52,7 +52,9 @@ class VendorWelcomeEmail extends Notification
         $email->save();
 
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
+                    ->line('Hi '.$this->vendor->name.',')
+                    ->line('Welcome to Duka! We\'re excited that you\'re about to take this journey with us. Thank you for signing up.')
+                    ->line('Click on the button below to verify yout email address.')
                     ->action('Notification Action', url('/api/vendor/email/verify/'.$email->token))
                     ->line('Thank you for using our application!');
     }

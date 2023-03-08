@@ -7,6 +7,7 @@ use App\Repository\Interface\User\AuthRepositoryInterface;
 use App\Http\Requests\RegisterUser;
 use App\Http\Requests\UserLogin;
 use App\Models\Category;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use App\Trait\Response;
 use App\Exceptions\ErrorException;
@@ -90,6 +91,21 @@ class UserAuthController extends Controller
            $categories = Category::all();
 
            return $this->success("Categories", $categories, 200);
+
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+
+    }
+
+    public function getFoodCategories(Request $request)
+    {
+        try{
+
+           $category = Category::where('name', 'Food')->first();
+           $categories = ProductCategory::where('category_id', $category->id)->get();
+
+           return $this->success("Product Categories", $categories, 200);
 
         }catch(\Exception $e){
             throw new ErrorException($e->getMessage());

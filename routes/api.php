@@ -75,6 +75,7 @@ Route::prefix('user')->group(function () {
 });
 
 Route::get('category', [UserAuthController::class, 'getCategories']);
+Route::get('food-category', [UserAuthController::class, 'getFoodCategories']);
 
 Route::prefix('vendor')->group(function () {
     Route::post('register', [VendorAuthController::class, 'registerVendor']);
