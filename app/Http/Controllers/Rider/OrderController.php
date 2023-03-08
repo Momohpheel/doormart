@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repository\Interface\Rider\OrderRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
-use App\Models\ErrorException;
+use App\Exceptions\ErrorException;
 
 class OrderController extends Controller
 {
@@ -66,14 +66,18 @@ class OrderController extends Controller
 
     }
 
-    public function getOpenOrders()
-    {
-
-    }
 
     public function dashboard()
     {
+        try
+        {
+            $response = $this->service->dashboard();
 
+            return $this->success("Rider Dashboard", $response, 200);
+
+        }catch(Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
     }
 
 
@@ -90,7 +94,7 @@ class OrderController extends Controller
 
             return $this->success("Order ". $orderId ." Accepted", $response, 200);
 
-        }catch(Exception $e){
+        }catch(\Exception $e){
             throw new ErrorException($e->getMessage());
         }
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class RegisterUser extends FormRequest
 {
@@ -30,4 +31,13 @@ class RegisterUser extends FormRequest
             'phone' => 'required|numeric|unique:users,phone'
         ];
     }
+
+
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
+    }
+
 }

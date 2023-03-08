@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\RegionController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\VendorAuthController;
 use App\Http\Controllers\Vendor\ProductController;
@@ -30,6 +32,7 @@ Route::prefix('user')->group(function () {
     Route::post('register', [UserAuthController::class, 'registerUser']);
     Route::post('login', [UserAuthController::class, 'userLogin']);
     Route::post('otp/verify', [UserAuthController::class, 'verify']);
+    Route::post('otp/resend', [UserAuthController::class, 'resendOtp']);
 
 
     Route::middleware(['auth:user'])->group(function () {
@@ -50,6 +53,11 @@ Route::prefix('user')->group(function () {
             Route::get('/{id}', [UserProductController::class, 'getSingleOrder']);
         });
 
+        Route::prefix('region')->group(function () {
+            Route::get('/', [UserController::class, 'getRegions']);
+
+        });
+
         Route::prefix('cart')->group(function () {
             Route::post('/add', [UserProductController::class, 'addToCart']);
             Route::get('/{category_id}', [UserProductController::class, 'getCart']);
@@ -62,17 +70,12 @@ Route::prefix('user')->group(function () {
             Route::post('/pay/verify', [UserProductController::class, 'verifyPayment']);
 
         });
-
-
-
-
-
-
-
     });
 
 });
 
+Route::get('category', [UserAuthController::class, 'getCategories']);
+Route::get('food-category', [UserAuthController::class, 'getFoodCategories']);
 
 Route::prefix('vendor')->group(function () {
     Route::post('register', [VendorAuthController::class, 'registerVendor']);
@@ -117,7 +120,7 @@ Route::prefix('rider')->group(function () {
 
     Route::prefix('password')->group(function () {
         Route::post('reset', [RiderAuthController::class, 'resetPassword']);
-       // Route::post('otp', [RiderAuthController::class, 'checkForgotPasswordOtp']);
+       Route::post('otp', [RiderAuthController::class, 'checkForgotPasswordOtp']);
         Route::post('forgot', [RiderAuthController::class, 'forgotPassword']);
         Route::post('change', [RiderAuthController::class, 'changePassword'])->middleware('auth:rider');
     });
@@ -125,7 +128,8 @@ Route::prefix('rider')->group(function () {
     Route::middleware(['auth:rider'])->group(function () {
 
         Route::post('/profile/update', [RiderAuthController::class, 'updateProfile']);
-       // Route::get('/profile', [RiderAuthController::class, 'getProfile']);
+        Route::get('/profile', [RiderAuthController::class, 'getProfile']);
+        Route::get('/dashboard', [RiderOrderController::class, 'dashboard']);
         Route::post('/status', [RiderAuthController::class, 'setStatuss']);
 
         Route::prefix('orders')->group(function () {
@@ -137,5 +141,17 @@ Route::prefix('rider')->group(function () {
             Route::post('/arrive/{orderId}', [RiderOrderController::class, 'orderArrived']);
             Route::post('/user/receive/{orderId}', [RiderOrderController::class, 'userReceivedOrder']);
         });
+    });
+});
+
+
+Route::prefix('admin')->group(function () {
+    Route::post('login', []);
+
+    Route::prefix('region')->group(function () {
+        Route::post('add', []);
+        Route::post('get', []);
+        Route::post('update', []);
+        Route::post('delete', []);
     });
 });

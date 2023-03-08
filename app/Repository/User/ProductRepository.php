@@ -11,12 +11,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Trait\Response;
 use App\Trait\Token;
+use App\Trait\Wallet;
 use App\Models\UserWallet;
 
 class ProductRepository implements ProductRepositoryInterface
 {
 
-    use Response, Token;
+    use Response, Token, Wallet;
 
     public function addToCart(array $request)
     {
@@ -281,6 +282,9 @@ class ProductRepository implements ProductRepositoryInterface
 
         $orderarr = array();
         $wallet = UserWallet::where('user_id', auth()->user()->id)->first();
+        if (!$wallet){
+            $this->createWallet(auth()->user()->id);
+        }
         $amount = 0;
         $vId = 0;
         $deliveryfee = 0;

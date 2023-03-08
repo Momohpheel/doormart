@@ -6,24 +6,23 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\Vendor;
-use App\Models\EmailVerify;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
-class VendorWelcomeEmail extends Notification
+class RegisterMail extends Notification
 {
     use Queueable;
 
-    public $vendor;
-
+    public $user;
+    public $otp;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Vendor $vendor)
+    public function __construct(User $user, string $otp)
     {
-        $this->vendor = $vendor;
+        $this->user = $user;
+        $this->otp = $otp;
     }
 
     /**
@@ -45,18 +44,12 @@ class VendorWelcomeEmail extends Notification
      */
     public function toMail($notifiable)
     {
-
-        $email = new EmailVerify;
-        $email->email = $this->vendor->email;
-        $email->token = Hash::make($this->vendor->email);
-        $email->save();
-
         return (new MailMessage)
-                    ->line('Hi '.$this->vendor->name.',')
-                    ->line('Welcome to Duka! We\'re excited that you\'re about to take this journey with us. Thank you for signing up.')
-                    ->line('Click on the button below to verify yout email address.')
-                    ->action('Notification Action', url('/api/vendor/email/verify/'.$email->token))
-                    ->line('Thank you for using our application!');
+                    ->line('Hi '.$this->user->name.',')
+                    ->line('Welcome to Duka! Thank you for signing up.')
+                    ->line($this->otp.' is your OTP code, use it to complete your signup process')
+                    // ->action('Notification Action', url('/'))
+                    ->line('Thank you again, for signing up!');
     }
 
     /**

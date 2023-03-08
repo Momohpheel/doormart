@@ -6,8 +6,11 @@ use App\Model\User;
 use App\Repository\Interface\User\AuthRepositoryInterface;
 use App\Http\Requests\RegisterUser;
 use App\Http\Requests\UserLogin;
+use App\Models\Category;
+use App\Models\ProductCategory;
 use Illuminate\Http\Request;
 use App\Trait\Response;
+use App\Exceptions\ErrorException;
 
 class UserAuthController extends Controller
 {
@@ -28,12 +31,16 @@ class UserAuthController extends Controller
      */
     public function registerUser(RegisterUser $request)
     {
+        try{
 
-        $validated = $request->validated();
+            $validated = $request->validated();
 
-        $response = $this->userService->register($validated);
+            $response = $this->userService->register($validated);
 
-        return $this->success("OTP has been sent", $response, 200);
+            return $this->success("OTP has been sent", $response, 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
     }
 
     /**
@@ -51,8 +58,8 @@ class UserAuthController extends Controller
 
             return $this->success("Login", $response, 200);
 
-        }catch(Exception $e){
-            return $this->error($e->getMessage());
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
         }
     }
 
@@ -62,19 +69,69 @@ class UserAuthController extends Controller
      */
     public function verify(Request $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|integer',
-            'otp' => 'required|string'
-        ]);
+        try{
+            $validated = $request->validate([
+                'user_id' => 'required|integer',
+                'otp' => 'required|string'
+            ]);
 
-        $response = $this->userService->verifyOtp($validated);
+            $response = $this->userService->verifyOtp($validated);
 
-        return $this->success("User logged in", ['token' => $response], 200);
+            return $this->success("User logged in", ['token' => $response], 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+
+    }
+
+    public function getCategories(Request $request)
+    {
+        try{
+
+           $categories = Category::all();
+
+           return $this->success("Categories", $categories, 200);
+
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+
+    }
+
+    public function getFoodCategories(Request $request)
+    {
+        try{
+
+           $category = Category::where('name', 'Food')->first();
+           $categories = ProductCategory::where('category_id', $category->id)->get();
+
+           return $this->success("Product Categories", $categories, 200);
+
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+
     }
 
 
     public function logout()
     {
+
+    }
+
+    public function resendOtp(Request $request)
+    {
+        try{
+            $validated = $request->validate([
+                'user_id' => 'required|integer',
+            ]);
+
+            $response = $this->userService->resendOtp($validated);
+
+            return $this->success("OTP sent", null, 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
 
     }
 

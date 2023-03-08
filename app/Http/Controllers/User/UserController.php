@@ -18,6 +18,13 @@ class UserController extends Controller
     }
 
 
+    public function getRegions()
+    {
+        $response = $this->service->getRegions();
+
+        return $this->success("Regions", $response, 200);
+    }
+
     /**
      *
      * get vendors based on region and category

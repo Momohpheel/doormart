@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class CartRequest extends FormRequest
 {
@@ -30,5 +31,11 @@ class CartRequest extends FormRequest
             'quantity' => ['required', 'numeric'],
             'user_id' => ['required', 'exists:users,id', 'numeric']
         ];
+    }
+    public function failedValidation(Validator $validator)
+    {
+        return response()->json([
+
+        ]);
     }
 }

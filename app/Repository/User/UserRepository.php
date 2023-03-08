@@ -4,6 +4,7 @@ namespace App\Repository\User;
 use App\Models\User;
 use App\Models\Vendor;
 use App\Models\Product;
+use App\Models\Region;
 use App\Repository\Interface\User\UserRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Trait\Response;
@@ -13,6 +14,13 @@ class UserRepository implements UserRepositoryInterface
 {
 
     use Response;
+
+    public function getRegions(){
+        $regions = Region::all();
+
+        return $regions;
+    }
+
 
     public function updateProfile(array $request)
     {
@@ -38,9 +46,9 @@ class UserRepository implements UserRepositoryInterface
     public function getVendors(array $request)
     {
         if (isset($request['region_id'])){
-            $vendor = Vendor::with('categories')->where('region_id', $request['region_id'])->where('category_id',  $request['category_id'])->where('status', 'active')->get();
+            $vendor = Vendor::with('categories')->where('region_id', $request['region_id'])->where('category_id',  $request['category_id'])->where('status', 'active')->where('admin_verified', true)->get();
         }else{
-            $vendor = Vendor::with('categories')->where('category_id',  $request['category_id'])->get();
+            $vendor = Vendor::with('categories')->where('category_id',  $request['category_id'])->where('status', 'active')->where('admin_verified', true)->get();
         }
 
 
