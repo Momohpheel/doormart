@@ -28,8 +28,8 @@ class AuthRepository implements AuthRepositoryInterface
                 'phone' => $request['phone'],
                 'password'  => Hash::make($request['password']),
                 'category_id' => $request['category_id'], //restaurant, pharmacy
-                'company_proof' => $request['proof'],
-                'public_image' => $request['public_image'],
+                'company_proof' => cloudinary()->upload($request->file('proof')->getRealPath())->getSecurePath(),
+                'public_image' => cloudinary()->upload($request->file('public_image')->getRealPath())->getSecurePath(),
             ]);
 
             return $user;
@@ -50,50 +50,53 @@ class AuthRepository implements AuthRepositoryInterface
 
             $user = Vendor::where('email', $request['email'])->first();
 
-            if ($user){
+            // if ($user){
 
-                $check = Hash::check($request['password'], $user->password);
+            //     $check = Hash::check($request['password'], $user->password);
 
-                if ($check){
-                    if ($user->admin_verified) {
-                        if ($user->email_verified_at){
-                            $token = $user->createToken('authToken');
-                            $user['access_token'] =  $token->plainTextToken;
-                            return $user;
-                        }else{
-                            return "User Email has not been verified";
-                        }
-                    }else{
-                        return "Admin hasn't verified you yet, plese be patient!";
-                    }
+            //     if ($check){
+            //         if ($user->email_verified_at){
+            //             if ($user->admin_verified) {
 
-                }else{
-                    return "Password or Email incorrect";
-                }
+            //                     $token = $user->createToken('authToken');
+            //                     $user['access_token'] =  $token->plainTextToken;
+            //                     return $user;
+
+            //             }else{
+            //                 return "Admin hasn't verified you yet, plese be patient!";
+            //             }
+            //         }else{
+            //             return "User Email has not been verified";
+            //         }
+
+            //     }else{
+            //         return "Password or Email incorrect";
+            //     }
 
 
-            }else{
-                return $this->error("User not found");
+            // }else{
+            //     return $this->error("User not found");
 
-            }
+            // }
 
             if (!$user){
-                return $this->error("User not found");
+                throw new \Exception("User not found");
             }
 
             $check = Hash::check($request['password'], $user->password);
 
             if (!$check){
-                return "Password or Email incorrect";
-            }
-
-            if (!$user->admin_verified) {
-                return "Admin hasn't verified you yet, plese be patient!";
+                throw new \Exception("Password or Email incorrect");
             }
 
             if (!$user->email_verified_at){
-                return "User Email has not been verified";
+                throw new \Exception("User Email has not been verified");
             }
+
+            if (!$user->admin_verified) {
+                throw new \Exception("Admin hasn't verified you yet, plese be patient!");
+            }
+
 
             $token = $user->createToken('authToken');
             $user['access_token'] =  $token->plainTextToken;
@@ -128,14 +131,15 @@ class AuthRepository implements AuthRepositoryInterface
     {
         $user = Vendor::where('email', $request['email'])->first();
 
-        if ($user) {
-            $user->notify(new VendorForgotPasswordEmail($user));
-
-            return true;
-        }
-        // }else{
+        if (!$user) {
             return "User doesn't exist";
-        // }
+        }
+
+        $user->notify(new VendorForgotPasswordEmail($user));
+
+        return true;
+
+
 
     }
 
@@ -157,16 +161,16 @@ class AuthRepository implements AuthRepositoryInterface
             ->get();
 
 
-        if ($token) {
-            DB::table('password_resets')
+        if (!$token) {
+            return false;
+        }
+
+        DB::table('password_resets')
             ->where("email", "=", $request['email'])
             ->where("token", "=", $request['otp'])
             ->delete();
 
             return true;
-        }else{
-            return false;
-        }
     }
 
 
@@ -176,15 +180,15 @@ class AuthRepository implements AuthRepositoryInterface
         $user = Vendor::where('id', auth()->user()->id)->first();
         $check = Hash::check($request['old_password'], $user->password);
 
-        if ($check) {
-            $user->password = Hash::make($request['new_password']);
-            $user->save();
-
-            return $user;
-
-        }else{
+        if (!$check) {
             return "Old Password is wrong";
         }
+
+        $user->password = Hash::make($request['new_password']);
+        $user->save();
+
+        return $user;
+
 
     }
 

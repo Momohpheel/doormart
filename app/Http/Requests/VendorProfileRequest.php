@@ -29,7 +29,8 @@ class VendorProfileRequest extends FormRequest
             'minOrder' => ['numeric'],
             'prepareTime' => ['string'],
             'region' => ['integer', 'exists:regions,id'],
-            'accountNumber' => ['string', 'min:10', 'max:10']
+            'accountNumber' => ['string', 'min:10', 'max:10'],
+            ''
         ];
     }
 

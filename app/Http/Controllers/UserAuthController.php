@@ -6,6 +6,7 @@ use App\Model\User;
 use App\Repository\Interface\User\AuthRepositoryInterface;
 use App\Http\Requests\RegisterUser;
 use App\Http\Requests\UserLogin;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Trait\Response;
 use App\Exceptions\ErrorException;
@@ -76,6 +77,20 @@ class UserAuthController extends Controller
             $response = $this->userService->verifyOtp($validated);
 
             return $this->success("User logged in", ['token' => $response], 200);
+        }catch(\Exception $e){
+            throw new ErrorException($e->getMessage());
+        }
+
+    }
+
+    public function getCategories(Request $request)
+    {
+        try{
+
+           $categories = Category::all();
+
+           return $this->success("Categories", $categories, 200);
+
         }catch(\Exception $e){
             throw new ErrorException($e->getMessage());
         }
